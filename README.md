@@ -1,1 +1,9 @@
 # trail-counters
+
+Sooner or later, anyone involved in building hiking or mountain biking trails on public lands is faced with questions about their user community. Whether to justify more trails, improvement in existing trails, apply for grants or funding, understand usage patterns, or just bragging rights, everyone likes objective metrics. How many people are using their trails. When are they using it - are there peak times? Are there favorite loops that see a lot more use that other routes? You built it, did they come? 
+
+Really good commercial trail counter systems are available from several companies. These packages are rugged, tested, and well supported but all that comes with a price. A recent survey found sensor prices ranging from $130 to $995 each, many designed as an overall system requiring the purchase of priorietary hardware and ongoing software subscriptions for data collection and analysis from these sensors. If you've got the budget for this, there are several solid choices in that market. Go for it - read no further.
+
+Perhaps I'm cheap, but this has always felt like a lot of money for something that is basically a simple task at it's core: detecting the presence of a user and recording that event in a time stamped log file. You don't need specialized analysis software. Standard spreadsheet programs are really good a crunching dates and times and making pretty graphs. Once you have event information you can import it and cut and slice it anyway that you'd like for presentation. You do need sensors and data collection hardware, but all the basic building blocks are readily available off the shelf.
+
+That's the theme of this repository: removing the cost barriers by sharing ideas, hardware references, and code to make it easy to create low cost trail counters for anyone who's interested in trail advocacy.
