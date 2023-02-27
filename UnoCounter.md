@@ -34,7 +34,7 @@ That's it, aside from a battery and a detection sensor.
 
 ![UnoCounter Boards](/assets/images/UnoCounterBoards.jpg)
 
-Internally, Arduino Uno boards operate on a 5V supply. You can use any battery capable of proving between 5 and 12 volts to power the stack, 
+Internally, Arduino Uno boards operate on a 5V supply. You can use any battery capable of providing between 5 and 12 volts to power the stack, 
 but the simple linear voltage regulators on these boards aren't terribly efficient and you'll get the best battery life at 5 volts. I've had 
 best results with arrays of 4 1.2 volt rechargable NiMH cells. 
 
