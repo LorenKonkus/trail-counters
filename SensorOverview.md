@@ -62,13 +62,13 @@ By default, these sensors have about an active high trigger time of 2 seconds an
 
 ![sensor](/assets/images/RCWL-0516Mods.jpg)
 
-You can replace C2 (in red) with a smaller capacitor for a narrower trigger pulse time and you can replace C3 (in blue) with a smaller capacitor for a shorter retrigger time between pulses. Replacing both with .001 uf results in a minimum output pulse duration of about 300 ms and a minimum time between pulses of about 300 ms which works pretty well. 
+You can replace C2 (in red) with a smaller capacitor for a narrower trigger pulse time and you can replace C3 (in blue) with a smaller capacitor for a shorter retrigger time between pulses. Replacing both with .001 uf results in a minimum output pulse duration of about 300 ms and a minimum time between pulses of about 300 ms which works pretty well differentiating fast moving bike traffic.
 
 ### The HFS-DC06F package
 
 This is a really nice, stable sensor package with easily adjustable range and trigger time settings. The output signal can be used directly as an 
 input to an Arduino Uno counter. The only downside to this package is that it's a bit of a power pig, requiring 30ma at 5 volts in operation. Given 
-that, it does work well as a detection sensor if you turn down the range and trigger time settings to their minimal values. This will result in a workable range of about 6 feet and about 2 seconds of high signal for each detection event.
+that, it does work well as a detection sensor if you turn down the range and trigger time settings to their minimal values. This will result in a workable range of about 6 feet and about 2 seconds of high signal for each detection event. This is fine for hikers and relatively slow low volume bike traffic where users are 4 seconds apart, but may undercount if they are closer than that.
 
 ![sensor](/assets/images/HFS-DC06F.jpg)
 
