@@ -42,14 +42,17 @@ inexpensive packages ready for use.
 ### Characteristice of microwave sensors
 
 - Microwaves can pass through some solid materials such as wood. This means that a trail counter could be embedded inside a 4x4 wooden signpost next to a trail 
-or located on the underside of a bridge plank and be complerely clandestine. It cannot be enclosed in a solid metal enclosure. 
+or located on the underside of a bridge plank and be complerely clandestine.
+- Microwave sensors are affected by nearby metal, and so cannot be enclosed in a metal vandal resistent case or attached to a metal fencepost, for instance. 
 - Microwaves seem less effective during rainstorms
 
 ### The RCWL-0516 package
 
 This is a powerful yet inexpensive sensor, but a little hard to tune and senstive to surroundings. Tuning trigger and retrigger times means soldering SMD 
-components. Still, it's my go-to for a microwave sensor.
+components. Still, it's my go-to for a microwave sensor. It's power efficient, requiring only about 1.2 ma and happily runs on either 5v or 3.3v soruces so it's easy
+to power up in the field with batteries or solar. The output signal can be used directly as a logic input to a trail counter. 
 
+![sensor](/assets/images/RCWL-0516.jpg)
 
 
 This modules are available at https://www.amazon.com/gp/product/B07YYY7J7D
@@ -62,6 +65,7 @@ This is a really nice, stable sensor package with easily adjustable range and re
 input to an Arduino Uno counter. The only downside to this package is that it's a bit of a power pig, requiring 30ma at 5 volts in operation. Given 
 that, it does work well as a detection sensor. 
 
+![sensor](/assets/images/HFS-DC06F.jpg)
 
 
 These modules are currently available at https://www.amazon.com/gp/product/B08TMQ36H6 or better prices if you shop around.
