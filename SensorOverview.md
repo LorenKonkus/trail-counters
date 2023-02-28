@@ -17,7 +17,7 @@ It may not be able to accurately count mountain bikers riding fast in a close cl
 the types of clothing being worn. A poorly placed sensor may count individual legs for footfalls. For these reasons, it's best to locate sensors in 
 locations that minimize these potential errors:
 
-- Place a sensor in a narrow construction, as when a trail passes between two large trees or on a narrow bridge where traffic is naturally single file 
+- Place a sensor in a narrow constriction, as when a trail passes between two large trees or on a narrow bridge where traffic is naturally single file 
 - Locate sensors after trail speed calming features, such as tight corners, narrow chicanes, or at the top of a steep climb to minimize issues with rapidly moving users
 - Aim sensors at the torso of the typical trail user, not at head height or leg height
 
@@ -54,21 +54,25 @@ to power up in the field with batteries or solar. The output signal can be used 
 
 ![sensor](/assets/images/RCWL-0516.jpg)
 
-
 This modules are available at https://www.amazon.com/gp/product/B07YYY7J7D
 
 There's alot of tuning and usage information at https://github.com/jdesbonnet/RCWL-0516 - see especially the issues discussions.
 
+By default, these sensors have about an active high trigger time of 2 seconds and a low retrigger time of 2 seconds between detection events. This isn't optimal for detecting individual riders in a group of mountain bikers, so I generally modify these boards to lessen that. 
+
+![sensor](/assets/images/RCWL-0516Mods.jpg)
+
+You can replace C2 (in red) with a smaller capacitor for a narrower trigger pulse time and you can replace C3 (in blue) with a smaller capacitor for a shorter retrigger time between pulses. Replacing both with .001 uf results in a minimum output pulse duration of about 300 ms and a minimum time between pulses of about 300 ms which works pretty well. 
+
 ### The HFS-DC06F package
 
-This is a really nice, stable sensor package with easily adjustable range and retrigger time settings. The output signal can be used directly as an 
+This is a really nice, stable sensor package with easily adjustable range and trigger time settings. The output signal can be used directly as an 
 input to an Arduino Uno counter. The only downside to this package is that it's a bit of a power pig, requiring 30ma at 5 volts in operation. Given 
-that, it does work well as a detection sensor. 
+that, it does work well as a detection sensor if you turn down the range and trigger time settings to their minimal values. This will result in a workable range of about 6 feet and about 2 seconds of high signal for each detection event.
 
 ![sensor](/assets/images/HFS-DC06F.jpg)
 
-
-These modules are currently available at https://www.amazon.com/gp/product/B08TMQ36H6 or better prices if you shop around.
+These modules are currently available at https://www.amazon.com/gp/product/B08TMQ36H6 or shop around.
 
 
 ## Inductive Loop
