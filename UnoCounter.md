@@ -42,6 +42,15 @@ best results with arrays of 4 1.2 volt rechargable NiMH cells.
 
 The UnoCounter software can be found in UnoCounter.ino in this repository. 
 
+## Sensor
+
+See [Sensor Overview](SensorOverview.md) for more information on sensors.
+
+I've typically used RCWL-0516 microwave sensors when using this trail counter. These sensors can be powered directly from the board (using the GND and 5V pins 
+and the output logic signal can be tied to one of the input pins (I used DIO 3 in the softwear). This sensor works best when located a couple inches 
+away from the arduino boards and battery, with no metal or electronics directly in front or behind the antenna area on the sensor board.
+
+
 
 
 
