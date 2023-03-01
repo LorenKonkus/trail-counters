@@ -48,12 +48,13 @@ detect only a single user at a time.
 ### The HC-SR501 PIR Sensor
 
 While there are many PIR sensors, this is a pretty convenient inexpensive package that is readily available. It includes a weatherproof IR transparent
-shield (that conveniently fits in a 7/8" hole cut in an enclosure) and has potentiometers to control sensitivity and retrigger delay times. 
+shield (that conveniently fits in a 7/8" hole cut in an enclosure) and has potentiometers to control sensitivity and retrigger delay times. It's power efficient, requiring only about 50 ua and happily runs on either 5v or 3.3v sources so it's easy to power.
 
 ![sensor](/assets/images/HC-SR501.jpg)
 
-I've found that setting the jumper for repeat triggering, the sensitivity to minimum, and the time delay to a minimum value yields the best results. You can
-drill a 7.8 inch hole in a waterproof plastic enclosure so that the sensor lens is exposed the the elements while protecting the electronics and battery.
+I've found that setting the jumper for repeat triggering, the sensitivity to minimum, and the time delay to a minimum value yields the best results. Even then, the minimum time delay value may be too long for fast traffic. Still investigating. 
+
+You can drill a 7.8 inch hole in a waterproof plastic enclosure so that the sensor lens is exposed to IR radiation while protecting the electronics and battery.
 
 ![sensor](/assets/images/HC-SR501-settings.jpg)
 
@@ -77,8 +78,7 @@ or located on the underside of a bridge plank and be complerely clandestine.
 ### The RCWL-0516 sensor
 
 This is a powerful yet inexpensive sensor, but a little hard to tune and senstive to surroundings. Tuning trigger and retrigger times means soldering SMD 
-components. Still, it's my go-to for a microwave sensor. It's power efficient, requiring only about 1.2 ma and happily runs on either 5v or 3.3v soruces so it's easy
-to power up in the field with batteries or solar. The output signal can be used directly as a logic input to a trail counter. 
+components. Still, it's my go-to for a microwave sensor. It's power efficient, requiring only about 1.2 ma and happily runs on either 5v or 3.3v sources so it's easy to power up in the field with batteries or solar. The output signal can be used directly as a logic input to a trail counter. 
 
 ![sensor](/assets/images/RCWL-0516.jpg)
 
