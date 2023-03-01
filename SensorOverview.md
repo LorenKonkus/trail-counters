@@ -43,6 +43,7 @@ are interpreted as motion and a digital logic output pulse is generated.
 detect only a single user at a time.
 - PIR sensors can sometimes detect swaying branches, so try to site in an area away from shrubbery or low hanging branches that may be impacted by wind.
 - PIR sensors can be overwhelmed by bright sunlight, and so try to site in an area with consistent shade. 
+- Since PIR sensors do not requre emitting light or radiation, they can be much more energy efficient than active IR or microwave sensors.
 
 ### The HC-SR501 PIR Sensor
 
