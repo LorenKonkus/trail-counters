@@ -30,7 +30,33 @@ to be written
 
 ## Passive infrared (PIR)
 
-to be written
+Passive Infrared sensors detect changes in received infrared radiation when a warm body, like a human or a horse, passes by the sensor. Since infrared 
+radiation is light, these sensors can use lenses to control the range and detection area of a sensor.
+
+These sensors are typically packaged as a group of one or more sensors and electronics that compares changes in the IR light detected by these sensors. Changes
+are interpreted as motion and a digital logic output pulse is generated.
+
+### Characteristics of PIR Sensors
+
+- Because these sensors are detecting light, they must physically be open to the environment. Any environmental shielding must be transparent to IR radiation
+- Many of the PIR sensors are wide field, intended for detecting movement within a room for instance. This is a consideration when siting, as we want to
+detect only a single user at a time.
+- PIR sensors can sometimes detect swaying branches, so try to site in an area away from shrubbery or low hanging branches that may be impacted by wind.
+- PIR sensors can be overwhelmed by bright sunlight, and so try to site in an area with consistent shade. 
+
+### The HC-SR501 PIR Sensor
+
+While there are many PIR sensors, this is a pretty convenient inexpensive package that is readily available. It includes a weatherproof IR transparent
+shield (that conveniently fits in a 7/8" hole cut in an enclosure) and has potentiometers to control sensitivity and retrigger delay times. 
+
+![sensor](/assets/images/HC-SR501.jpg)
+
+I've found that setting the jumper for repeat triggering, the sensitivity to minimum, and the time delay to a minimum value yields the best results. You can
+drill a 7.8 inch hole in a waterproof plastic enclosure so that the sensor lens is exposed the the elements while protecting the electronics and battery.
+
+![sensor](/assets/images/HC-SR501-settings.jpg)
+
+HC-SR501 sensors are available here: https://www.amazon.com/DIYmall-HC-SR501-Motion-Infrared-Arduino/dp/B012ZZ4LPM and at many other sources.
 
 ## Microwave
 
@@ -45,8 +71,9 @@ inexpensive packages ready for use.
 or located on the underside of a bridge plank and be complerely clandestine.
 - Microwave sensors are affected by nearby metal, and so cannot be enclosed in a metal vandal resistent case or attached to a metal fencepost, for instance. 
 - Microwaves seem less effective during rainstorms
+- Microwave sensor operation is unaffected by bright sunlight, moving shadows, the darkness of night, or headlights on bikes.
 
-### The RCWL-0516 package
+### The RCWL-0516 sensor
 
 This is a powerful yet inexpensive sensor, but a little hard to tune and senstive to surroundings. Tuning trigger and retrigger times means soldering SMD 
 components. Still, it's my go-to for a microwave sensor. It's power efficient, requiring only about 1.2 ma and happily runs on either 5v or 3.3v soruces so it's easy
@@ -64,11 +91,11 @@ By default, these sensors have about an active high trigger time of 2 seconds an
 
 You can replace C2 (in red) with a smaller capacitor for a narrower trigger pulse time and you can replace C3 (in blue) with a smaller capacitor for a shorter retrigger time between pulses. Replacing both with .001 uf results in a minimum output pulse duration of about 300 ms and a minimum time between pulses of about 300 ms which works pretty well differentiating fast moving bike traffic.
 
-### The HFS-DC06F package
+### The HFS-DC06F sensor
 
 This is a really nice, stable sensor package with easily adjustable range and trigger time settings. The output signal can be used directly as an 
 input to an Arduino Uno counter. The only downside to this package is that it's a bit of a power pig, requiring 30ma at 5 volts in operation. Given 
-that, it does work well as a detection sensor if you turn down the range and trigger time settings to their minimal values. This will result in a workable range of about 6 feet and about 2 seconds of high signal for each detection event. This is fine for hikers and relatively slow low volume bike traffic where users are 4 seconds apart, but may undercount if they are closer than that.
+that, it does work well as a detection sensor if you turn down the range and trigger time settings to their minimal values. This will result in a workable range of about 6 feet and about 2 seconds of high signal for each detection event. This is fine for hikers and relatively slow low volume bike traffic where users are 4 seconds apart, but may undercount if they are closer together than that.
 
 ![sensor](/assets/images/HFS-DC06F.jpg)
 
