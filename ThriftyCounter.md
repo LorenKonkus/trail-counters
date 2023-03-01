@@ -1,7 +1,7 @@
 # ThriftyCounter
 
 ThriftyCounter is an AdafruitFeather M0 Adalogger based trail counter that records each trail user detection event as an entry in a .CSV file on a 
-microSD card that can be collected and impportant into a spreadsheet. ThriftyCounter was developed as a followup to the UnoCounter project in an attempt to 
+microSD card that can be collected and imported into a spreadsheet. ThriftyCounter was developed as a followup to the UnoCounter project in an attempt to 
 lower energy usage and improve battery life. An Arduino Uno requires a fair amount of power even when the microcontrolleris in sleep mode, and this
 has an impact on the battery required for extended deployment times out in a forest. Batteries are expensive, and if we can halve or quarter the amount
 of capacity that we need we can reduce the cost significantly. ThriftyCounter was a great step in that direction.
