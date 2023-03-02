@@ -42,7 +42,7 @@ See [Sensor Overview](SensorOverview.md) for more information on sensors.
 
 I used RCWL-0516 microwave sensors when using this trail counter. These sensors can be powered directly from the board (using the GND and 3.3V pins 
 and the output logic signal can be tied to one of the input pins (I used DIO 11 in the softwear). This sensor works best when located a couple inches 
-away from the arduino boards and battery, with no metal or electronics directly in front or behind the antenna area on the sensor board.
+away from the feather boards and battery, with no metal or electronics directly in front or behind the antenna area on the sensor board.
 
 The data sheets for the RCWL-0516 say that the board requires an input voltage between 4 and 28v, but that input is regulated to 3.3 volts to run board and the
 samples that I've used seem totally happy running with the nice, clean, regulated 3.3v source that the adalogger feather can provide.
