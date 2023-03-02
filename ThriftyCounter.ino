@@ -15,7 +15,11 @@
   imported into a spreadsheet for data analysis. Each entry in the log file will have
   a timestamp and the duration of the event. The green LED on the feather is lit
   whenever the detection sensor is high. The red LED flashes once each time an event
-  is written to the SD card, or multiple blinks to indicate a specific error condition.
+  is written to the SD card, or multiple blinks to indicate a specific error condition:
+
+  2 blinks = error, no RTC clock found
+  3 blinks = error, no microSD card. Insert one to clear condition
+  4 blinks = error, unable to write to a microSD card
 
   Copyright © 2023 Loren Konkus
  
@@ -28,7 +32,6 @@
  
   The above copyright notice and this permission notice shall be included in
   all copies or substantial portions of the Software.
- 
  */
 
 #include <Wire.h>
@@ -101,11 +104,6 @@ void setup() {
   pinMode(redLED, OUTPUT);
   pinMode(cardSelect, OUTPUT);
 
-  // Initialize serial, just in case connected 
-  while (! Serial); // Wait until Serial is ready
-  Serial.begin(9600);
-  Serial.println("\r\nThrifty Feather Counter");
-
   // Initialize the RTC. 
   DateTime compileTime = DateTime(F(__DATE__), F(__TIME__));
   
@@ -113,25 +111,19 @@ void setup() {
   rtc.begin();    // Start the RTC
   rtc.setTime(compileTime.hour(), compileTime.minute(), compileTime.second());   // Set the time
   rtc.setDate(compileTime.day(), compileTime.month(), compileTime.year()-2000);    // Set the date
-  Serial.println("RTC set to " + getTimeString(compileTime));
 #endif
 #if defined(USE_DS3231_TIME)
   if (!rtc.begin()) {
-    Serial.println("Expected external Real Time Clock not found");
     fatalError(2);
   }
   if (rtc.lostPower()) {
-    Serial.println("Real Time Clock lost power; initializing");
     rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
   }
 #endif
-  Serial.print("Starting up at ");
-  Serial.println(getTimeString(getCurrentTime()));
 
   // Initialize the SD card
   // No card indicated by three rapid red flashes
   while (!SD.begin(cardSelect)) {
-    Serial.println("No SD card found, waiting");
     error(3);
     delay(3000);
   }
@@ -141,17 +133,11 @@ void setup() {
   boolean newfile = false;
   if (! SD.exists(filename)) {
     newfile = true;
-    Serial.print("Creating log file ");
-    Serial.println(filename);
-  } else {
-    Serial.print("Opening log file ");
-    Serial.println(filename);
   }
 
   logfile = SD.open(filename, FILE_WRITE); 
   if (!logfile) {
-    Serial.println("couldnt open event log file");
-    while (1) delay(10);
+    fatalError(4);
   }
 
   if (newfile) {
@@ -205,8 +191,9 @@ void loop() {
     measuredvbat *= 3.3;  // Multiply by 3.3V, our reference voltage
     measuredvbat /= 1024; // convert to voltage
     eventLogRecord += measuredvbat;
+    eventLogRecord += ",";
+    eventLogRecord += rtc.getTemperature();
 
-    Serial.println(eventLogRecord);
     digitalWrite(redLED, HIGH);
     logfile.println(eventLogRecord);
     eventsLogged = true;
