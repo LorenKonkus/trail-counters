@@ -1,6 +1,6 @@
 # NiftyCounter
 
-NiftyCounter is an AdafruitFeather ESP32-S2 Reverse TFT Feather based trail counter that records each trail user detection event as an entry in a .CSV file on a 
+NiftyCounter is an Adafruit ESP32-S2 Reverse TFT Feather based trail counter that records each trail user detection event as an entry in a .CSV file on a 
 microSD card that can be collected and imported into a spreadsheet. 
 
 NiftyCounter was developed as a followup to the ThriftyCounter project. ThriftyCounter works pretty well and has been counting trail users for some time, but there
