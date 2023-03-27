@@ -13,10 +13,13 @@ That's the theme of this repository: removing the cost barriers by sharing ideas
 The following overview documents might be useful:
 
 - SensorOverview.md - an overview of the types of sensors commonly in use
+- PackagingOptions.md - an overview of the ways I've packaged up hardware for field deployments
 
 Along this path, I've built several trail counters to test new ideas and refine the technology. These are:
 
 - UnoCounter - an Arduino UNO based trail counter that records trail usaage event data on an SD card.
-- ThriftyCounter - a minimal Adafruit M0 Adalogger feather based counter that records trail usage data on a microSD card. The primary goal was low power usage to minimize battery cost and size for extended unattended operation. In progress.
+- ThriftyCounter - a minimal Adafruit M0 Adalogger feather based counter that records trail usage data on a microSD card. The primary goal was low power usage to minimize battery cost and size for extended unattended operation.
+- NiftyCounter - a ThriftyCounter with a user interface based on the Adafruit ESP32-S2 Reverse TFT Feather. In development.
+
 
 
