@@ -8,7 +8,7 @@ Here are several alternatives I've used for packaging a counter:
 
 ## ZipLoc Bag
 
-The simpliest option when deploying a trail counter is to tuck it in a simple ZipLoc bag. These are waterproof, low cost, and easy to locate in smal,odd areas. 
+The simpliest option when deploying a trail counter is to tuck it in a simple ZipLoc bag. These are waterproof, low cost, and easy to locate in small, odd areas. 
 Bags are great for quickly deploying a prototype out on the trail. 
 
 ![ziploc](/assets/images/ziploc.jpg)
