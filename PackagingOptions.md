@@ -43,16 +43,17 @@ users to pass single file and at relatively slow speeds and help to ensure accur
 
 The PostIt frame was designed to conceal a feather based trail counter within a 2 inch diameter, 8 inch deep hole bored into a wooden post. 4x4 posts are common
 sights along a trail, often festooned with decals and pointers, and are not obvious targets for anyone looking for a trail counter. This design relies on the 
-post for environmental protection, and can only be used with sensors that can detect presence through wood like a microwave. 
+post for environmental protection, and can only be used with sensors that can detect presence through wood (like a microwave sensor). 
 
 ![case](/assets/images/FeatherComponentFrameDesign.jpg)
 
-The basic design is a cylinder with space for a battery at the bottom, the feather controller boards, and space for a sensor at the top. It's open to allow access 
-to the front and back of a feather stack to replace the battery, plug in a USB cord, and swap microSD cards without removing any boards from the frame. It's sized 
-for a 4400 mah LiPo battery, held into place by a rubber band. A finger hold at the top eases extraction from a post.
+The basic design is a cylinder with space for a 4400 mah LiPo battery at the bottom, a stack of two feather boards, and space for a sensor at the top. It's open to allow access 
+to the front and back of a feather stack to replace the battery, plug in a USB cord, and swap microSD cards without removing any boards from the frame. There's a 
+recess for a rubber band to hold the battery at the bottom, and a finger hold at the top to ease extraction from a post. The cylinder is 1.75 inches in diameter which
+provides good clearance in a 2 inch bore in a post. 
 
-The STL file for the PostIt frame can be found in the repository at PostIt.stl. It's designed to be 3d printed in two sections, front and back, and glued together.
-
+The STL file for the PostIt frame can be found in the repository at PostIt.stl. When 3d printing, it's easiest to print in two sections, front and back, to eliminate
+issues with horizontal spans. You can find a pre-split version at PostItSplit.stl. 
 
 
 ## Tagging
