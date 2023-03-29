@@ -39,7 +39,21 @@ users to pass single file and at relatively slow speeds and help to ensure accur
 
 ## 3d Printed Enclosures
 
-Still refining designs. Stay tuned.
+### PostIt Frame
+
+The PostIt frame was designed to conceal a feather based trail counter within a 2 inch diameter, 8 inch deep hole bored into a wooden post. 4x4 posts are common
+sights along a trail, often festooned with decals and pointers, and are not obvious targets for anyone looking for a trail counter. This design relies on the 
+post for environmental protection, and can only be used with sensors that can detect presence through wood like a microwave. 
+
+![case](/assets/images/FeatherComponentFrameDesign.jpg)
+
+The basic design is a cylinder with space for a battery at the bottom, the feather controller boards, and space for a sensor at the top. It's open to allow access 
+to the front and back of a feather stack to replace the battery, plug in a USB cord, and swap microSD cards without removing any boards from the frame. It's sized 
+for a 4400 mah LiPo battery, held into place by a rubber band. A finger hold at the top eases extraction from a post.
+
+The STL file for the PostIt frame can be found in the repository at PostIt.stl. It's designed to be 3d printed in two sections, front and back, and glued together.
+
+
 
 ## Tagging
 
