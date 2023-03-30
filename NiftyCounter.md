@@ -35,6 +35,14 @@ https://www.adafruit.com/product/2922 that works nicely and can stack on the Rev
 
 ![NiftyCounter assembled](/assets/images/NiftyCounterBack.jpg)
 
+As I mentioned, the ESP32-S2 contains WiFi support, and the -S3 variant includes BLE as well. It would be possible to enable one of these and remote harvest
+counter data without touching a counter, but there's two big issues with this:
+- Power consumption.
+- Counter Discovery. Broadcasting a signal makes a counter huntable by nefarious foreign agents.
+
+It would be possible to code a button or menu option to turn on communications for a short period to harvest data, but that means having access to the counter and if 
+you're there it's so much easier to just swap the microSD card. 
+
 
 ## Software Platform
 
