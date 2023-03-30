@@ -46,7 +46,7 @@ you're there it's so much easier to just swap the microSD card.
 
 ## Software Platform
 
-The NiftyCounter software can be found in NiftyCounter.ino in this repository.
+The NiftyCounter software can be found in NiftyCounter.ino in this repository. Well, it will be as soon as I'm happy enough with the software to share.
 
 
 ## Sensor
