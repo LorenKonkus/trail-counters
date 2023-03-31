@@ -24,6 +24,9 @@ locations that minimize these potential errors:
 It may be possible to differentiate trail users based on sensor choice and positioning. For example, an active infrared sensor 8' off the ground would 
 likely be tripped by an equestrian, but not a biker or hiker. An inductive loop would probably detect a bike, and maybe horseshoes, but not a hiker. 
 
+When choosing a sensor strategy, one of the most important considerations will be power consumption. There are a number of really fine, accurate human presence
+sensors but some of their power requirements make them really only suitable for line power applications or when large capacity batteries are employed.
+
 ## Active Infrared
 
 to be written
