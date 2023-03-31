@@ -52,6 +52,10 @@ to the front and back of a feather stack to replace the battery, plug in a USB c
 recess for a rubber band to hold the battery at the bottom, and a finger hold at the top to ease extraction from a post. The cylinder is 1.75 inches in diameter which
 provides good clearance in a 2 inch bore in a post. 
 
+This frame can hold components for either the ThrifyCounter or NiftyCounter. Here's what it looks like with NiftyCounter components mounted:
+
+![case](/assets/images/FeatherComponentFramePrototype.jpg)
+
 The STL file for the PostIt frame can be found in the repository at PostIt.stl. When 3d printing, it's easiest to print in two sections, front and back, to eliminate
 issues with horizontal spans. You can find a pre-split version at PostItSplit.stl. 
 
