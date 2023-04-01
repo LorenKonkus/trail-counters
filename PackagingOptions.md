@@ -49,15 +49,17 @@ post for environmental protection, and can only be used with sensors that can de
 
 The basic design is a cylinder with space for a 4400 mah LiPo battery at the bottom, a stack of two feather boards, and space for a sensor at the top. It's open to allow access 
 to the front and back of a feather stack to replace the battery, plug in a USB cord, and swap microSD cards without removing any boards from the frame. There's a 
-recess for a rubber band to hold the battery at the bottom, and a finger hold at the top to ease extraction from a post. The cylinder is 1.75 inches in diameter which
-provides good clearance in a 2 inch bore in a post. 
+recess for a rubber band to hold the battery at the bottom, and a finger hold at the top to ease extraction from a post. (Or you can tie a lanyard to it so it's easier to retrieve from a deeper bore.) The cylinder is 1.75 inches in diameter which provides lots of clearance in a 2 inch bore in a post. 
 
 This frame can hold components for either the ThrifyCounter or NiftyCounter. Here's what it looks like with NiftyCounter components mounted:
 
 ![case](/assets/images/FeatherComponentFramePrototype.jpg)
 
 The STL file for the PostIt frame can be found in the repository at PostIt.stl. When 3d printing, it's easiest to print in two sections, front and back, to eliminate
-issues with horizontal spans. You can find a pre-split version at PostItSplit.stl. The model has tap holes for a RCWL-0516 microwave sensor (mount with 1.4 mm machine screws) and tap holes for feather boards (mount with 2.5 mm machine screws). 
+issues with horizontal spans. These sections can either be glued together or assembled using 2.5 mm machine screws. You can find a pre-split version at PostItSplit.stl. 
+
+The model has tap holes for a RCWL-0516 microwave sensor (mount with 1.4 mm machine screws) and tap holes for feather boards (mount with 2.5 mm machine screws). You
+might need to tweak this somewhat when using different sensors.
 
 
 ## Tagging
