@@ -62,6 +62,21 @@ You can drill a 7.8 inch hole in a waterproof plastic enclosure so that the sens
 ![sensor](/assets/images/HC-SR501-settings.jpg)
 
 HC-SR501 sensors are available here: https://www.amazon.com/DIYmall-HC-SR501-Motion-Infrared-Arduino/dp/B012ZZ4LPM and at many other sources.
+ 
+## Seismic
+
+Seismic sensors work by sensing vibrations, and characterising how those vibrations may map to trail users. Seismic sensors are often mounted to structures 
+such as bridges to detect footsteps.
+
+### The LSM303AGR Sensor
+
+The LSM303AGR chip is a low power, high sensitivity accelerometer and magnetometer package that has been used in a number of trail counter packages. 
+
+![sensor](/assets/images/LSM303AGR.jpg)
+
+These modules are available from a number of sources. I'm using the breakout board available at https://www.adafruit.com/product/4413
+
+(more coming soon as I gain more experience with it)
 
 ## Microwave
 
@@ -85,7 +100,7 @@ components. Still, it's my go-to for a microwave sensor. It's power efficient, r
 
 ![sensor](/assets/images/RCWL-0516.jpg)
 
-This modules are available at https://www.amazon.com/gp/product/B07YYY7J7D
+These modules are available at https://www.amazon.com/gp/product/B07YYY7J7D
 
 There's alot of tuning and usage information at https://github.com/jdesbonnet/RCWL-0516 - see especially the issues discussions.
 
