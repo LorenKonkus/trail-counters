@@ -56,7 +56,8 @@ This frame can hold components for either the ThrifyCounter or NiftyCounter. Her
 ![case](/assets/images/FeatherComponentFramePrototype.jpg)
 
 The STL file for the PostIt frame can be found in the repository at PostIt.stl. When 3d printing, it's easiest to print in two sections, front and back, to eliminate
-issues with horizontal spans. These sections can either be glued together or assembled using 2.5 mm machine screws. You can find a pre-split version at PostItSplit.stl. 
+issues with horizontal spans and avoid the need for bridging or supports. These sections can either be glued together or assembled using 2.5 mm machine screws. 
+You can find a two part version at PostItSplit.stl. 
 
 The model has tap holes for a RCWL-0516 microwave sensor (mount with 1.4 mm machine screws) and tap holes for feather boards (mount with 2.5 mm machine screws). You
 might need to tweak this somewhat when using different sensors.
