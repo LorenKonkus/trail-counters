@@ -1,21 +1,20 @@
 /*
-  NiftyCounter - A low cost  Trail Counter
+  NiftyCounter - A low cost Trail Counter with a nifty user interface
 
-  A low cost trail use counter using off the shelf Arduino shields and 
-  inexpensive, readily available microwave sensors. 
+  A low cost trail use counter using off the shelf hardware and 
+  inexpensive, readily available microwave sensors that's appropriate when you
+  just want to place a few counters out on trails in the forest and are able
+  to visit them every month or two to switch batteries and harvest the microSD card. 
 
   Required components:
-  - Arduino Uno R3
-  - adafruit data logging shield for arduino
+  - adafruit Adafruit ESP32-S2 Reverse TFT feather board
+  - adafruit Adalogger feather wing
   - a microwave sensor. Tested using RCWL-0516 and HFS-DC06F, but similar devices should
     work. Really, any sensor that provides a high detection pulse should work.
 
-  Optional component:
-  - adafrut 16x2 LCD shield for arduino (the kind that communicates via the I2C bus)
-
   Time stamped trail use data is recorded in a .csv file on the SD card that can be 
   viewed and summarized in a spreadsheet. Current trail use statistics can be viewed by
-  scrolling through the LCD display, if that display is present.
+  using the TFT display.
 
   Copyright © 2023 Loren Konkus
  
@@ -41,46 +40,46 @@
 #include "RTClib.h"
 #include "driver/rtc_io.h"
 
-
 // The Adafruit Adalogger board uses a 8523 as the Real time clock
 RTC_PCF8523 rtc;
 
-// Use dedicated hardware SPI pins for display
-Adafruit_ST7789 tft = Adafruit_ST7789(TFT_CS, TFT_DC, TFT_RST);
-const int displayIdleCounterReset = 100;
-volatile int displayIdleCounter = displayIdleCounterReset;
-
-// We use this digital in for the trail user sensor active detection. This can change,
-// but it needs to be a GPIO that has RTC functionality: 0,2,4,12-15,25-27,32-39
-const int sensorIn = 12;
-boolean sensorEnabled = true;
-
-// Chip select for the microSD card
-const int cardSelect = 10;
-
-// Battery monitor
+// The Adafruit ESP32-S2 card's buit in Battery monitor
 Adafruit_MAX17048 batteryMonitor;
 
-int led = LED_BUILTIN;
+// The Adafruit Reverse TFT card's built in display
+Adafruit_ST7789 tft = Adafruit_ST7789(TFT_CS, TFT_DC, TFT_RST);
+
+#define DISPLAY_IDLE_COUNTER_RESET 60
+volatile int displayIdleCounter = DISPLAY_IDLE_COUNTER_RESET;
+
+// We use this digital in for the trail user sensor active detection. This can change,
+// but it needs to be a GPIO that has RTC functionality.
+#define SENSOR_IN 12
+RTC_DATA_ATTR boolean sensorEnabled = true;
+
+// Chip select for the microSD card
+#define SD_CARD_SELECT 10
 
 //
 // Slots for user counts
 //
-int totalSinceStart = 0;
-int totalThisDay = 0;
-int totalThisHour = 0;
-int hourTrip = -1;
-int dayTrip = -1;
-int displayPane = 0;
-volatile int lastTimeDisplayed = -1;
-volatile int lastCountDisplayed = -1;
+RTC_DATA_ATTR int totalSinceStart = 0;
+RTC_DATA_ATTR int totalThisDay = 0;
+RTC_DATA_ATTR int totalThisHour = 0;
+RTC_DATA_ATTR int hourTrip = -1;
+RTC_DATA_ATTR int dayTrip = -1;
+
 volatile unsigned long eventStartTime = 0;
 volatile unsigned long lastEventDuration = 0;
-DateTime lastEventTime;
+
 File logfile;
-boolean recordingEvents = false;
-const int idleCounterReset = 100;
-volatile int idleCounter = idleCounterReset;
+RTC_DATA_ATTR boolean recordingEvents = false;
+RTC_DATA_ATTR char logFileName[20];
+
+
+
+#define IDLE_COUNTER_RESET 100
+volatile int idleCounter = IDLE_COUNTER_RESET;
 
 volatile int buttonPressed = 0;
 #define UP_BUTTON 1
@@ -103,10 +102,10 @@ int menuItemSelected = 1;
 
 int setClockLabelSelected = 0;
 int setClockValueSelected = -1;
-String setClockLabels[6] = {"Year:","Month:","Day:","Hour:","Minute:","Save"};
 int setClockValues[5];
-int setClockValuesMin[5] = {23,1,1,0,0};
-int setClockValuesMax[5] = {99,12,31,23,59};
+const String setClockLabels[6] = {"Year:","Month:","Day:","Hour:","Minute:","Save"};
+const int setClockValuesMin[5] = {23,1,1,0,0};
+const int setClockValuesMax[5] = {99,12,31,23,59};
 
 //
 // Interupt routine called when a proximity sensor event occurs. At the
@@ -116,22 +115,27 @@ int setClockValuesMax[5] = {99,12,31,23,59};
 //
 void onSensorChanged() {
   if (sensorEnabled) {
-    if (digitalRead(sensorIn) == HIGH) {
+    if (digitalRead(SENSOR_IN) == HIGH) {
       eventStartTime = millis();
       lastEventDuration = 0;
     } else {
-      lastEventDuration = millis() - eventStartTime;
-      eventStartTime = 0;
+      if (eventStartTime != 0) {
+        lastEventDuration = millis() - eventStartTime;
+        eventStartTime = 0;
+      }
     }
   }
-  //  sleep_disable();
-  idleCounter = idleCounterReset;
+  idleCounter = IDLE_COUNTER_RESET;
+  displayIdleCounter = DISPLAY_IDLE_COUNTER_RESET;
 }
 
 //
 // Interupt routine called whenever a button is pressed. Too much work to
 // do in an interupt routine so if a button is pressed we'll note it for 
 // the next loop iteration.
+//
+// On the reverse TFT feather board, D0 is normally high, D1, D2 are normally
+// low.
 //
 void onButtonPressed() {
 
@@ -140,7 +144,7 @@ void onButtonPressed() {
   unsigned long interupt_time = millis();
   if (interupt_time - last_interupt_time > 300) {
 
-    if (digitalRead(0) == HIGH) {
+    if (digitalRead(0) == LOW) {
       buttonPressed = UP_BUTTON;
     }
     if (digitalRead(1) == HIGH) {
@@ -151,22 +155,44 @@ void onButtonPressed() {
     }
   }
   last_interupt_time = interupt_time;
-  displayIdleCounter = displayIdleCounterReset;
+  displayIdleCounter = DISPLAY_IDLE_COUNTER_RESET;
 }
 
 void setup() {
 
   Serial.begin(115200);
 
+  // We can get here either by a normal reset startup or by waking up from a deep sleep.
+  // When in deep sleep, memory and connections can be lost so they need to be re-established,
+  // but we don't want the verbose UI startup dialog or delays when waking
+  boolean coldStart = true;
+  switch(esp_sleep_get_wakeup_cause()) {
+    case ESP_SLEEP_WAKEUP_EXT0 : coldStart = false; break;
+    case ESP_SLEEP_WAKEUP_EXT1 : coldStart = false; break;
+  }
+
+  // If this is a wakeup from a sensor or button, we can't expect that the interupt 
+  // routine was run (since we haven't called attach to interrupt yet). So call them
+  // explicitly. This is non-destructive if an event or button press hadn't happened.
+  if (!coldStart) {
+    buttonPressed = 0;
+    onButtonPressed();
+    eventStartTime = 0;
+    onSensorChanged();
+  }
+  
   // set LED to be an output pin
-  pinMode(led, OUTPUT);
+  pinMode(LED_BUILTIN, OUTPUT);
+  digitalWrite(LED_BUILTIN, LOW);
+
+  // We won't use the NeoPixel
+  pinMode(NEOPIXEL_POWER, OUTPUT);
+  digitalWrite(NEOPIXEL_POWER, LOW);
 
   // Setup the TFT Display
   pinMode(TFT_BACKLITE, OUTPUT);
   pinMode(TFT_I2C_POWER, OUTPUT);
   tftOn();
-
-  // initialize TFT
   tft.init(135, 240); // Init ST7789 240x135
   tft.setRotation(3); // landscape mode with buttons on left
   tft.fillScreen(ST77XX_BLACK);
@@ -175,10 +201,12 @@ void setup() {
   tft.setCursor(0, 0);
   tft.setTextColor(ST77XX_WHITE);
   tft.setTextSize(2);
-  tft.println("Nifty Counter");
-  tft.println("version 1.0");
-  tft.setTextSize(1);
-  tft.println("\nCopyright (c) 2023 Loren Konkus\n");
+  if (coldStart) {
+    tft.println("Nifty Counter");
+    tft.println("version 1.0");
+    tft.setTextSize(1);
+    tft.println("\nCopyright (c) 2023 Loren Konkus\n");
+  }
 
   // Initialize the RTC
   if (! rtc.begin()) {
@@ -198,14 +226,16 @@ void setup() {
     tft.setTextColor(ST77XX_YELLOW);
     tft.setTextSize(1);
     tft.println("Real Time Clock initialized");
-  }
+  }   
   rtc.start();
-
-  tft.setTextColor(ST77XX_GREEN);
-  tft.setTextSize(1);
-  tft.print("\nCurrent time: ");
-  tft.setTextColor(ST77XX_WHITE);
-  tft.println(getTimestampString(getCurrentTime()));
+  
+  if (coldStart) {
+    tft.setTextColor(ST77XX_GREEN);
+    tft.setTextSize(1);
+    tft.print("\nCurrent time: ");
+    tft.setTextColor(ST77XX_WHITE);
+    tft.println(getTimestampString(getCurrentTime()));
+  }
 
   // Initialize the battery monitor
   if (!batteryMonitor.begin()) {
@@ -213,20 +243,22 @@ void setup() {
     tft.setTextSize(1);
     tft.println("Battery monitor not available");
   } else {    
-    delay(1000); // battery monitor needs a moment to collect itself... 
-    tft.setTextColor(ST77XX_GREEN);
-    tft.setTextSize(1);
-    tft.print("\nBattery Status: ");
-    tft.setTextColor(ST77XX_WHITE);
-    tft.print(batteryMonitor.cellVoltage(),1);
-    tft.print("v, ");
-    tft.print(batteryMonitor.cellPercent(),0);
-    tft.println("%");
+    if (coldStart) {
+      delay(1000); // battery monitor needs a moment to collect itself... 
+      tft.setTextColor(ST77XX_GREEN);
+      tft.setTextSize(1);
+      tft.print("\nBattery Status: ");
+      tft.setTextColor(ST77XX_WHITE);
+      tft.print(batteryMonitor.cellVoltage(),1);
+      tft.print("v, ");
+      tft.print(batteryMonitor.cellPercent(),0);
+      tft.println("%");
+    }
   }
 
   // Initialize the SD card
-  pinMode(cardSelect, OUTPUT);
-  if (!SD.begin(cardSelect)) {
+  pinMode(SD_CARD_SELECT, OUTPUT);
+  if (!SD.begin(SD_CARD_SELECT)) {
     tft.setTextColor(ST77XX_RED);
     tft.setTextSize(2);
     tft.println("Insert SD Card and");
@@ -236,27 +268,29 @@ void setup() {
   }
 
   // create an event log .csv file using the counter startup date
-  String filename = eventsFileName(getCurrentTime());
   boolean newfile = false;
-  if (!SD.exists(filename)) {
-    newfile = true;
+  if (coldStart) {
+    eventsFileName(logFileName, getCurrentTime());
+    if (!SD.exists(logFileName)) {
+      newfile = true;
+    }
+    tft.setTextSize(1);
+    tft.setTextColor(ST77XX_GREEN);
+    if (newfile) {
+      tft.print("\nCreating file: ");
+    } else {
+      tft.print("\nOpening file: ");
+    }
+    tft.setTextColor(ST77XX_WHITE);
+    tft.println(logFileName);
   }
-  tft.setTextSize(1);
-  tft.setTextColor(ST77XX_GREEN);
-  if (newfile) {
-    tft.print("\nCreating file: ");
-  } else {
-    tft.print("\nOpening file: ");
-  }
-  tft.setTextColor(ST77XX_WHITE);
-  tft.println(filename);
 
-  logfile = SD.open(filename, FILE_WRITE);
+  logfile = SD.open(logFileName, FILE_WRITE);
   if (!logfile) {
     tft.setTextColor(ST77XX_RED);
     tft.setTextSize(2);
     tft.println("Error opening log");
-    tft.println("file. Check SD card");
+    tft.print("file. Check SD card");
     while (1) delay (1000);
   }
   recordingEvents = true;
@@ -267,20 +301,20 @@ void setup() {
   }
 
   // Proximity detector digital in
-  pinMode(sensorIn, INPUT);
-  attachInterrupt(digitalPinToInterrupt(sensorIn), onSensorChanged, CHANGE);
+  pinMode(SENSOR_IN, INPUT);
+  attachInterrupt(digitalPinToInterrupt(SENSOR_IN), onSensorChanged, CHANGE);
   
   // Buttons
   pinMode(0, INPUT_PULLUP);
   pinMode(1, INPUT_PULLDOWN);
   pinMode(2, INPUT_PULLDOWN);
-  attachInterrupt(digitalPinToInterrupt(0), onButtonPressed, RISING);
+  attachInterrupt(digitalPinToInterrupt(0), onButtonPressed, FALLING);
   attachInterrupt(digitalPinToInterrupt(1), onButtonPressed, RISING);
   attachInterrupt(digitalPinToInterrupt(2), onButtonPressed, RISING);
 
   // We'll go into light sleep mode to save power between events. We'll wake up
   // for either a sensor input or a button press.
-  #define BUTTON_PIN_BITMASK 0x000000F07 // io 0,1,2,12 in hex
+  #define BUTTON_PIN_BITMASK 0x000001006 // io GPIO 1,2,12 in hex
   esp_sleep_enable_ext1_wakeup(BUTTON_PIN_BITMASK,ESP_EXT1_WAKEUP_ANY_HIGH);
   esp_sleep_pd_config(ESP_PD_DOMAIN_RTC_PERIPH, ESP_PD_OPTION_ON);
   rtc_gpio_pullup_en(GPIO_NUM_0);
@@ -288,11 +322,16 @@ void setup() {
   rtc_gpio_pulldown_en(GPIO_NUM_2);
 
   // Initialization complete
-  tft.setTextColor(ST77XX_GREEN);
-  tft.setTextSize(1);
-  tft.println("\nStartup Successful");
-  delay (5000);
-
+  if (coldStart) {
+    tft.setTextColor(ST77XX_GREEN);
+    tft.setTextSize(1);
+    tft.println("\nStartup Successful");
+    delay (5000);
+  }
+  
+  idleCounter = IDLE_COUNTER_RESET;
+  displayIdleCounter = DISPLAY_IDLE_COUNTER_RESET;
+  activePage = 0;
   displayDashboardPage();
 }
 
@@ -301,13 +340,18 @@ void setup() {
 //
 void loop() {
 
-  // Manage the display timeout. If we've gone displayIdleCounterReset loops without
+  // Manage the timeout. If we've gone DISPLAY_IDLE_COUNTER_RESET loops without
   // a button press, turn off the display. Users can press any button to turn it on again.
   if (displayIdleCounter>0) {
     displayIdleCounter--;
   }
   if (displayIdleCounter == 0) {
+    // Time to sleep...
     tftOff();
+    if (logfile) {
+      logfile.close();
+    }
+    esp_deep_sleep_start();
   } else {
     tftOn();
   }
@@ -450,10 +494,12 @@ void loop() {
   //
   // Reset the hourly and daily counters if needed
   //
-  DateTime now = rtc.now();
+  DateTime now = getCurrentTime();
   if (now.day() != dayTrip) {
     totalThisDay = 0;
     dayTrip = now.day();
+    totalThisHour = 0;
+    hourTrip = now.hour();
   }
   if (now.hour() != hourTrip) {
     totalThisHour = 0;
@@ -469,8 +515,7 @@ void loop() {
       totalSinceStart++;
       totalThisDay++;
       totalThisHour++;
-      lastEventTime = now;
-      String eventLogRecord = getTimestampString(lastEventTime);
+      String eventLogRecord = getTimestampString(now);
       eventLogRecord += ",";
       eventLogRecord += lastEventDuration;
       eventLogRecord += ",1,";
@@ -515,14 +560,12 @@ String getTimestampString(DateTime aTime) {
 //
 // Compute a FAT filename for the events log
 //
-String eventsFileName(DateTime aTime) {
+void eventsFileName(char* buffer, DateTime aTime) {
   int aYear = aTime.year();
   if (aYear > 2000) {
     aYear = aYear - 2000;
   }
-  char buffer[14];
   sprintf(buffer,"/C%02d%02d%02d.csv",aYear,aTime.month(),aTime.day());
-  return String(buffer);
 }
 
 //
@@ -547,7 +590,7 @@ void tftOff() {
 //
 void doToggleSensors() {
 
-  // reset counters
+  // change the sensor enable to whatever it isn't
   sensorEnabled = !sensorEnabled;
 
   // tell the user
@@ -570,21 +613,9 @@ void doToggleSensors() {
 void doResetCounters() {
 
   // reset counters
-//  totalSinceStart = 0;
-//  totalThisDay = 0;
-//  totalThisHour = 0;
-
-  // tell the user
-  tft.fillScreen(ST77XX_BLACK);
-  tft.setCursor(30, 60);
-  tft.setTextColor(ST77XX_WHITE, ST77XX_BLACK);
-  tft.setTextSize(2);
-  tft.print("Sleep Test");
-  delay (5000);
-  esp_light_sleep_start();
-    pinMode(0, INPUT_PULLUP);
-  pinMode(1, INPUT_PULLDOWN);
-  pinMode(2, INPUT_PULLDOWN);
+  totalSinceStart = 0;
+  totalThisDay = 0;
+  totalThisHour = 0;
 
   // tell the user
   tft.fillScreen(ST77XX_BLACK);
@@ -593,8 +624,7 @@ void doResetCounters() {
   tft.setTextSize(2);
   tft.print("Counters reset");
   delay (5000);
-  tft.fillScreen(ST77XX_BLACK);
-  
+  tft.fillScreen(ST77XX_BLACK);  
 }
 
 // 
@@ -717,7 +747,7 @@ void doRemoveSDCard() {
 // works.
 //
 boolean doLoadSDCard() {
-  if (!SD.begin(cardSelect)) {
+  if (!SD.begin(SD_CARD_SELECT)) {
     tft.fillScreen(ST77XX_BLACK);
     tft.setCursor(30, 60);
     tft.setTextColor(ST77XX_WHITE, ST77XX_BLACK);
@@ -728,16 +758,16 @@ boolean doLoadSDCard() {
   }
 
   // create an event log .csv file using the counter startup date
-  String filename = eventsFileName(getCurrentTime());
+  eventsFileName(logFileName, getCurrentTime());
   boolean newfile = false;
-  if (!SD.exists(filename)) {
+  if (!SD.exists(logFileName)) {
     newfile = true;
   }
 
   if (logfile) {
     logfile.close();
   }
-  logfile = SD.open(filename, FILE_WRITE);
+  logfile = SD.open(logFileName, FILE_WRITE);
   if (!logfile) {
     tft.fillScreen(ST77XX_BLACK);
     tft.setCursor(30, 60);
@@ -825,7 +855,6 @@ void displayDashboardPage() {
     tft.print("This day:");
     tft.setCursor(30, 100);
     tft.print("Total:");
-
     activePage = DASHBOARD_PAGE;
   }
 
