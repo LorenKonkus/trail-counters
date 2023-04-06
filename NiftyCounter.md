@@ -80,7 +80,7 @@ Pressing the middle (D1) button will display the options menu:
 These menu options can be used to select various features - disabling sensors, safely ejecting the microSD card, etc. D0 is the up button, D2 the down button, and D1
 selects/enters. 
 
-To harvest data, simply select "eject SD card" in the menu, replace the microSD card with a new, preformatted card and select "load SD card" in the menu. The SD 
+To harvest data, simply select "eject SD card" in the menu, replace the microSD card with a new, preformatted card and press the board Restart button. The SD 
 card will contain a .csv file named "CYYMMDD".csv, where YYMMDD reflect the current date. Each entry in the csv file will contain fields for the timestamp of 
 the event, the date of the event, the time of the event, the duration of the event, and an event count.
 
