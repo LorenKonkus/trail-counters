@@ -45,7 +45,7 @@ The PostIt frame was designed to conceal a feather based trail counter within a 
 sights along a trail, often festooned with decals and pointers, and are not obvious targets for anyone looking for a trail counter. This design relies on the 
 post for environmental protection, and can only be used with sensors that can detect presence through wood (like a microwave sensor). 
 
-![case](/assets/images/FeatherComponentFrameDesign.jpg)
+![case](/assets/images/NiftyCounterPost.jpg)
 
 The basic design is a cylinder with space for a 4400 mah LiPo battery at the bottom, a stack of two feather boards, and space for a sensor at the top. It's open to allow access 
 to the front and back of a feather stack to replace the battery, plug in a USB cord, and swap microSD cards without removing any boards from the frame. There's a 
