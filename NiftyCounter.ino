@@ -37,6 +37,7 @@
 #include <Wire.h>
 #include <SPI.h>
 #include <SD.h>
+#include "fs.h"
 #include "RTClib.h"
 #include "driver/rtc_io.h"
 
@@ -49,37 +50,36 @@ Adafruit_MAX17048 batteryMonitor;
 // The Adafruit Reverse TFT card's built in display
 Adafruit_ST7789 tft = Adafruit_ST7789(TFT_CS, TFT_DC, TFT_RST);
 
-#define DISPLAY_IDLE_COUNTER_RESET 60
-volatile int displayIdleCounter = DISPLAY_IDLE_COUNTER_RESET;
+// Power management. After a button press, stay awake for DISPLAY_IDLE_COUNTER_RESET
+// seconds. After a sensor high interupt, stay awake for SENSOR_IDLE_COUNTER_RESET 
+// seconds.
+#define SENSOR_IDLE_COUNTER_RESET 30
+#define DISPLAY_IDLE_COUNTER_RESET 240
+volatile int idleCounter = SENSOR_IDLE_COUNTER_RESET;
 
 // We use this digital in for the trail user sensor active detection. This can change,
 // but it needs to be a GPIO that has RTC functionality.
 #define SENSOR_IN 12
-RTC_DATA_ATTR boolean sensorEnabled = true;
 
 // Chip select for the microSD card
 #define SD_CARD_SELECT 10
 
-//
 // Slots for user counts
-//
 RTC_DATA_ATTR int totalSinceStart = 0;
 RTC_DATA_ATTR int totalThisDay = 0;
 RTC_DATA_ATTR int totalThisHour = 0;
 RTC_DATA_ATTR int hourTrip = -1;
 RTC_DATA_ATTR int dayTrip = -1;
 
-volatile unsigned long eventStartTime = 0;
-volatile unsigned long lastEventDuration = 0;
+// Slots for current sensor events
+RTC_DATA_ATTR boolean sensorEnabled = true;
+volatile unsigned long sensorEventStartTime = 0;
+volatile unsigned long sensorEventDuration = 0;
 
+// slots for the event log file
 File logfile;
 RTC_DATA_ATTR boolean recordingEvents = false;
 RTC_DATA_ATTR char logFileName[20];
-
-
-
-#define IDLE_COUNTER_RESET 100
-volatile int idleCounter = IDLE_COUNTER_RESET;
 
 volatile int buttonPressed = 0;
 #define UP_BUTTON 1
@@ -116,17 +116,18 @@ const int setClockValuesMax[5] = {99,12,31,23,59};
 void onSensorChanged() {
   if (sensorEnabled) {
     if (digitalRead(SENSOR_IN) == HIGH) {
-      eventStartTime = millis();
-      lastEventDuration = 0;
+      sensorEventStartTime = millis();
+      sensorEventDuration = 0;
     } else {
-      if (eventStartTime != 0) {
-        lastEventDuration = millis() - eventStartTime;
-        eventStartTime = 0;
+      if (sensorEventStartTime != 0) {
+        sensorEventDuration = millis() - sensorEventStartTime;
+        sensorEventStartTime = 0;
       }
     }
   }
-  idleCounter = IDLE_COUNTER_RESET;
-  displayIdleCounter = DISPLAY_IDLE_COUNTER_RESET;
+  if (idleCounter < SENSOR_IDLE_COUNTER_RESET) {
+    idleCounter = SENSOR_IDLE_COUNTER_RESET;
+  }
 }
 
 //
@@ -146,16 +147,18 @@ void onButtonPressed() {
 
     if (digitalRead(0) == LOW) {
       buttonPressed = UP_BUTTON;
+      idleCounter = DISPLAY_IDLE_COUNTER_RESET;
     }
     if (digitalRead(1) == HIGH) {
       buttonPressed = SELECT_BUTTON;
+      idleCounter = DISPLAY_IDLE_COUNTER_RESET;
     }
     if (digitalRead(2) == HIGH) {
       buttonPressed = DOWN_BUTTON;
+      idleCounter = DISPLAY_IDLE_COUNTER_RESET;
     }
   }
   last_interupt_time = interupt_time;
-  displayIdleCounter = DISPLAY_IDLE_COUNTER_RESET;
 }
 
 void setup() {
@@ -177,7 +180,7 @@ void setup() {
   if (!coldStart) {
     buttonPressed = 0;
     onButtonPressed();
-    eventStartTime = 0;
+    sensorEventStartTime = 0;
     onSensorChanged();
   }
   
@@ -269,7 +272,7 @@ void setup() {
 
   // create an event log .csv file using the counter startup date
   boolean newfile = false;
-  if (coldStart) {
+  if (true) {
     eventsFileName(logFileName, getCurrentTime());
     if (!SD.exists(logFileName)) {
       newfile = true;
@@ -285,7 +288,7 @@ void setup() {
     tft.println(logFileName);
   }
 
-  logfile = SD.open(logFileName, FILE_WRITE);
+  logfile = SD.open(logFileName, "a+");
   if (!logfile) {
     tft.setTextColor(ST77XX_RED);
     tft.setTextSize(2);
@@ -313,7 +316,8 @@ void setup() {
   attachInterrupt(digitalPinToInterrupt(2), onButtonPressed, RISING);
 
   // We'll go into light sleep mode to save power between events. We'll wake up
-  // for either a sensor input or a button press.
+  // for either a sensor input or a button press. Note that we don't wake for button
+  // 0 presses - that's normally high button so it would wake us immediately.
   #define BUTTON_PIN_BITMASK 0x000001006 // io GPIO 1,2,12 in hex
   esp_sleep_enable_ext1_wakeup(BUTTON_PIN_BITMASK,ESP_EXT1_WAKEUP_ANY_HIGH);
   esp_sleep_pd_config(ESP_PD_DOMAIN_RTC_PERIPH, ESP_PD_OPTION_ON);
@@ -329,8 +333,6 @@ void setup() {
     delay (5000);
   }
   
-  idleCounter = IDLE_COUNTER_RESET;
-  displayIdleCounter = DISPLAY_IDLE_COUNTER_RESET;
   activePage = 0;
   displayDashboardPage();
 }
@@ -342,15 +344,20 @@ void loop() {
 
   // Manage the timeout. If we've gone DISPLAY_IDLE_COUNTER_RESET loops without
   // a button press, turn off the display. Users can press any button to turn it on again.
-  if (displayIdleCounter>0) {
-    displayIdleCounter--;
+  if (idleCounter>0) {
+    idleCounter--;
   }
-  if (displayIdleCounter == 0) {
-    // Time to sleep...
-    tftOff();
+  if (idleCounter == 0 &&
+      sensorEventDuration == 0 &&
+      sensorEventStartTime == 0) {
+    // Idle time expired and we're not in the middle of processing an event, so close up
+    // files and enter a deep sleep.
     if (logfile) {
+      logfile.flush();
       logfile.close();
+      delay(2000);
     }
+    tftOff();
     esp_deep_sleep_start();
   } else {
     tftOn();
@@ -510,26 +517,25 @@ void loop() {
   // If an event occured, record it. The duration of the last event is a flag to
   // denote one occured.
   //
-  if (lastEventDuration != 0) {
+  if (sensorEventDuration != 0) {
     if (recordingEvents) {
       totalSinceStart++;
       totalThisDay++;
       totalThisHour++;
       String eventLogRecord = getTimestampString(now);
       eventLogRecord += ",";
-      eventLogRecord += lastEventDuration;
+      eventLogRecord += sensorEventDuration;
       eventLogRecord += ",1,";
       eventLogRecord += totalThisHour;
       eventLogRecord += ",";
       eventLogRecord += totalThisDay;
       eventLogRecord += ",";
       eventLogRecord += totalSinceStart;
-      Serial.println(eventLogRecord);
       logfile.println(eventLogRecord);
       logfile.flush();
     }
     
-    lastEventDuration = 0;
+    sensorEventDuration = 0;
   }
 
   delay(1000);               // wait for a second
@@ -868,7 +874,7 @@ void displayDashboardPage() {
   tft.fillRect(30, 39, 85, 10, ST77XX_BLACK);
   tft.setCursor(30, 39);
   if (sensorEnabled) {
-    if (eventStartTime != 0) {
+    if (sensorEventStartTime != 0) {
       tft.print("Sensor Active");
     } else {
       tft.print("Ready");
