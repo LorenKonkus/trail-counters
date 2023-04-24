@@ -89,6 +89,7 @@ void onSensorChanged() {
     digitalWrite(greenLED, HIGH);
   } else {
     lastEventDuration = millis() - eventStartTime;
+    eventStartTime = 0;
     digitalWrite(greenLED, LOW);
   }
   idleCounter = 100;
@@ -129,7 +130,8 @@ void setup() {
   }
   
   // create an event log .csv file using the counter startup date
-  String filename = eventsFileName(getCurrentTime());
+  char filename[14];
+  getEventsFileName(getCurrentTime(), filename);
   boolean newfile = false;
   if (! SD.exists(filename)) {
     newfile = true;
@@ -142,7 +144,12 @@ void setup() {
 
   if (newfile) {
     // New file, so write out the spreadsheet column headers
-    logfile.println("Event Time, Duration, Event Count");
+    logfile.println("Timestamp, Date, Time, Duration, Event Count");
+  } else {
+    // So this shouldn't be necessary with FILE_WRITE, but for whatever reason an existing file
+    // is occasionally positioned at beginning when re-opened and all your hard earned counter
+    // data is overwritten. This forces an append at end of file.
+    logfile.seek(logfile.size());
   }
 
   // Ready for sensor interupts
@@ -160,7 +167,7 @@ void loop() {
   // are written to the card. (Actual SD card updates are power expensive, so we don't do that on
   // every event).
   //
-  if (idleCounter>0) {
+  if (idleCounter >  0 || eventStartTime != 0) {
     idleCounter--;
     if (idleCounter == 0) {
       if (eventsLogged) {
@@ -170,7 +177,7 @@ void loop() {
         digitalWrite(redLED, LOW);
         eventsLogged = false;
       }
-      LowPower.sleep();
+      LowPower.deepSleep();
     }
   }
 
@@ -180,19 +187,15 @@ void loop() {
   //
   if (lastEventDuration != 0) {
     DateTime eventTime = getCurrentTime();
-    String eventLogRecord = getTimeString(eventTime);
-    eventLogRecord += ",";
-    eventLogRecord += lastEventDuration;
-    eventLogRecord += ",1,";
-
-    // Temp - write out battery voltage to log so we can debug power consumption over a long term
-    float measuredvbat = analogRead(A7);
-    measuredvbat *= 2;    // we divided by 2, so multiply back
-    measuredvbat *= 3.3;  // Multiply by 3.3V, our reference voltage
-    measuredvbat /= 1024; // convert to voltage
-    eventLogRecord += measuredvbat;
-    eventLogRecord += ",";
-    eventLogRecord += rtc.getTemperature();
+    char eventLogRecord[50];
+    getTimestampString(eventTime, eventLogRecord);
+    strcat(eventLogRecord, ",");
+    getDateString(eventTime, &eventLogRecord[strlen(eventLogRecord)]);
+    strcat(eventLogRecord, ",");
+    getTimeString(eventTime, &eventLogRecord[strlen(eventLogRecord)]);
+    strcat(eventLogRecord, ",");
+    sprintf(&eventLogRecord[strlen(eventLogRecord)], "%lu", lastEventDuration);
+    strcat(eventLogRecord, ",1");
 
     digitalWrite(redLED, HIGH);
     logfile.println(eventLogRecord);
@@ -220,14 +223,15 @@ DateTime getCurrentTime() {
 //
 // Compute a FAT filename for the events log
 //
-String eventsFileName(DateTime aTime) {
+// aTime - a DataTime object
+// buffer - a char array of at least 14 chars to receive the filename
+//
+void getEventsFileName(DateTime aTime, char* buffer) {
   int aYear = aTime.year();
   if (aYear > 2000) {
     aYear = aYear - 2000;
   }
-  char buffer[14];
   sprintf(buffer,"C%02d%02d%02d.csv",aYear,aTime.month(),aTime.day());
-  return String(buffer);
 }
 
 //
@@ -235,14 +239,43 @@ String eventsFileName(DateTime aTime) {
 // most spreadsheets happy. RTCs vary and may or may not support 4 digit dates,
 // so we always just use last 2 for consistency.
 //
-String getTimeString(DateTime aTime) {
+// aTime - a DateTime object
+// buffer - a char array of at least 20 chars
+//
+void getTimestampString(DateTime aTime, char* buffer) {
   int thisYear = aTime.year();
   if (thisYear > 2000) {
     thisYear = thisYear - 2000;
   }
-  char buffer[18];
   sprintf(buffer,"%02d-%02d-%02d %02d:%02d:%02d",aTime.month(),aTime.day(),thisYear,aTime.hour(),aTime.minute(),aTime.second());
-  return String(buffer);
+}
+
+//
+// Get a date string in format mm-dd-yy, which seems to make 
+// most spreadsheets happy. RTCs vary and may or may not support 4 digit dates,
+// so we always just use last 2 for consistency.
+//
+// aTime - a DateTime object
+// buffer - a char array of at least  10 chars
+//
+void getDateString(DateTime aTime, char* buffer) {
+  int thisYear = aTime.year();
+  if (thisYear > 2000) {
+    thisYear = thisYear - 2000;
+  }
+  sprintf(buffer,"%02d-%02d-%02d",aTime.month(),aTime.day(),thisYear);
+}
+
+//
+// Get a time string in format hh:mm:ss, which seems to make 
+// most spreadsheets happy. RTCs vary and may or may not support 4 digit dates,
+// so we always just use last 2 for consistency.
+//
+//  aTime - a DateTime object
+//  buffer - char array of at least 10 characters
+//
+void getTimeString(DateTime aTime, char* buffer) {
+  sprintf(buffer,"%02d:%02d:%02d",aTime.hour(),aTime.minute(),aTime.second());
 }
 
 //
