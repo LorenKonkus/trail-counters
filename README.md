@@ -14,6 +14,7 @@ The following overview documents might be useful:
 
 - SensorOverview.md - an overview of the types of sensors commonly in use
 - PackagingOptions.md - an overview of the ways I've packaged up hardware for field deployments
+- HelpfulReferences.md - pointers to docs, videos, and commercial trail counter systems
 
 Along this path, I've built several trail counters to test new ideas and refine the technology. These are:
 
