@@ -217,8 +217,8 @@ DateTime getCurrentTime() {
 #endif
 #if defined(USE_DS3231_TIME) 
   return rtc.now();
-}
 #endif
+}
 
 //
 // Compute a FAT filename for the events log
