@@ -62,9 +62,9 @@ You can find a two part version at PostItSplit.stl.
 The model has tap holes for a RCWL-0516 microwave sensor (mount with 1.4 mm machine screws) and tap holes for feather boards (mount with 2.5 mm machine screws). You
 might need to tweak this somewhat when using different sensors.
 
-### NiftyCounterBox
+### NiftyCase Box
 
-The NiftyCounter box was designed to house a feather stack, some sort of infrared or visual detector, and a battery in a case that could be screwed to a 4x4 post or a tree. 
+The NiftyCase box was designed to house a feather stack, some sort of infrared or visual detector, and a battery in a case that could be screwed to a 4x4 post or a tree. 
 
 ![case](/assets/images/NiftyCaseClosed.jpg)
 ![case](/assets/images/NiftyCaseTree.jpg)
