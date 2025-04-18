@@ -62,6 +62,22 @@ You can find a two part version at PostItSplit.stl.
 The model has tap holes for a RCWL-0516 microwave sensor (mount with 1.4 mm machine screws) and tap holes for feather boards (mount with 2.5 mm machine screws). You
 might need to tweak this somewhat when using different sensors.
 
+### NiftyCounterBox
+
+The NiftyCounter box was designed to house a feather stack, some sort of infrared or visual detector, and a battery in a case that could be screwed to a 4x4 post or a tree. 
+
+![case](/assets/images/NiftyCaseClosed.jpg)
+![case](/assets/images/NiftyCaseTree.jpg)
+
+This frame can hold components for either the ThrifyCounter, NiftyCounter, or NiftySTHS34PF80. Here's what it looks like with NiftySTHS34PF80 components mounted:
+
+![case](/assets/images/NiftyCaseOpen.jpg)
+
+There's plenty of space reserved for larger batteries.
+
+The STL files for this can be found in the repository as NiftyCaseBox.stl, NiftyCaseLid.stl, NiftyCaseLatch.stl (two required) and NiftyCaseTPUSeal. Since these are exposed to the elements, select an appropriate material such as PETG or ABS for longevity. The NiftyCaseTPUSeal is an optional flexible gasket that helps to make the box more weathertight, and should be printed in something like TPU. 
+
+
 
 ## Tagging
 
