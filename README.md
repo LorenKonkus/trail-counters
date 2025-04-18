@@ -21,6 +21,7 @@ Along this path, I've built several trail counters to test new ideas and refine 
 - UnoCounter - an Arduino UNO based trail counter that records trail usaage event data on an SD card.
 - ThriftyCounter - a minimal Adafruit M0 Adalogger feather based counter that records trail usage data on a microSD card. The primary goal was low power usage to minimize battery cost and size for extended unattended operation.
 - NiftyCounter - a ThriftyCounter with a user interface based on the Adafruit ESP32-S2 Reverse TFT Feather. In development.
+- NiftyCounterSTHS34PF80 - a NiftyCounter variant designed for an I2C based sensor.
 
 In addition to these trail counters, there's a small app that harvests trail usage information from Strava each day. Sometimes it's interesting to compare this information to actual counts, and it can be useful to gather information for more trail segments where it's impractical to host actual trail counters. Strava only tracks a small percentage of actual trail use, and so some sort of statistical local multiplier should be applied to get closer to true trail usage. 
 
