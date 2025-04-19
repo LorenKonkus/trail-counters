@@ -6,7 +6,7 @@ With this sensor, the Adafruit ESP32-S2 (or -S3) Reverse TFT Feather microcontro
 presence or motion within its field of view, records each trail user detection event as an entry in a .CSV file on a 
 microSD card that can be collected and imported into a spreadsheet. 
 
-![NiftyCounter assembled](/assets/images/NiftyCounter.jpg)
+![NiftyCounter assembled](/assets/images/NiftyCounterSTHS34PF80Hardware.JPG)
 
 ## Hardware Platform
 
@@ -43,6 +43,8 @@ with the software to share.
 
 
 ## Sensor
+
+The NiftyCounterSTHS34PF80 software was designed for the ST Microelectronics STHS34PF80 TMOS motion and presence sensor, available at https://www.sparkfun.com/sparkfun-mini-human-presence-and-motion-sensor-sths34pf80-qwiic.html
 
 See [Sensor Overview](SensorOverview.md) for more information on sensors.
 
