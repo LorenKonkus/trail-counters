@@ -51,7 +51,7 @@ See [Sensor Overview](SensorOverview.md) for more information on sensors.
 
 On startup, the display, clock, and SD card are initialized and readied. Users can follow along on the startup log
 
-![NiftyCounter assembled](/assets/images/NiftyCounterStartup.jpg)
+![NiftyCounter assembled](/assets/images/NiftyCounterI2CStartup.jpg)
 
 After a moment or two, the normal main dashboard is displayed. This dashboard includes information about the current time, battery status, sensor status, and count
 values for the hour, day, and since last startup.
@@ -62,10 +62,15 @@ The display remains visible for a few moments, and then is turned off to save po
 
 Pressing the middle (D1) button will display the options menu:
 
-![NiftyCounter assembled](/assets/images/NiftyCounterMenu.jpg)
+![NiftyCounter assembled](/assets/images/NiftyCounterI2CMenu.jpg)
 
 These menu options can be used to select various features - debugging sensors, safely ejecting the microSD card, etc. D0 is the up button, D2 the down button, and D1
 selects/enters. 
+
+Selecting the Sensor Details menu option will display a dynamic page displaying position and motion sensor values. Highlighted reverse text indicates that the values are at the level
+that would be considered "active":
+
+![NiftyCounter assembled](/assets/images/NiftyCounterI2CSensor.jpg)
 
 To harvest data, simply select "eject SD card" in the menu, replace the microSD card with a new, preformatted card and press the board Restart button. The SD 
 card will contain a .csv file named "CYYMMDD".csv, where YYMMDD reflect the current date. Each entry in the csv file will contain fields for the timestamp of 
