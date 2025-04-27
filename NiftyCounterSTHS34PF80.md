@@ -76,4 +76,4 @@ that would be considered "active":
 
 To harvest data, simply select "eject SD card" in the menu, replace the microSD card with a new, preformatted card and press the board Restart button. The SD 
 card will contain a .csv file named "CYYMMDD".csv, where YYMMDD reflect the current date. Each entry in the csv file will contain fields for the timestamp of 
-the event, the date of the event, the time of the event, the durat
+the event, the date of the event, the time of the event, the duration of the event, and an event count.
